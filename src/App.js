@@ -48,9 +48,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Switch>
-        <Route exact path="/" component={Webapp} />
-        <Route path="/:section/" component={Webapp} />
+        <Route exact path="/" render={(props) => <Webapp type="slashed" />} />
         <Route path="/404" component={Page404} />
+        <Route path="/:section/" render={(props) => <Webapp type="regular" />} />
         <Redirect to="/404" />
       </Switch>
     </ThemeProvider>
