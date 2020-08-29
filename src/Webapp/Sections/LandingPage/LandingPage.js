@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Button from '../../../components/Button';
-import { ReactComponent as SaxSVG } from '../../../media/saxophone.svg';
+import { ReactComponent as DrumsSVG } from '../../../media/drums.svg';
 import { ReactComponent as BeerSVG } from '../../../media/beer.svg';
 import ConcertJPG from '../../../media/concert.jpg';
 
@@ -17,20 +17,19 @@ const Canvas = styled.div`
 
 const Image = styled.div`
   position: absolute;
-  top: 300px;
+  top: 320px;
   left: 0;
   width: 100%;
-  height: calc(100% - 300px);
+  height: calc(100% - 320px);
   z-index: -2;
   background-image: url(${ConcertJPG});
   background-size: cover;
-  background-attachment: fixed;
-  background-position: center;
+  background-position: top;
 `;
 
 const FeaturesWrap = styled.div`
   display: flex;
-  margin-top: 80px;
+  margin-top: 40px;
   color: ${(props) => props.theme.white};
 `;
 
@@ -38,7 +37,7 @@ const Feature = styled.div`
   display: flex;
   flex-direction: column;
   width: 50%;
-  padding: 64px 80px 40px;
+  padding: 64px 48px 40px;
 
   @media screen and (max-width: 1024px) {
     padding-right: 40px;
@@ -58,8 +57,8 @@ const Feature = styled.div`
 const FeatureCategory = styled.div`
   display: flex;
   font-size: 14px;
-  font-weight: 500;
-  line-height: 24px;
+  font-weight: 400;
+  line-height: 32px;
   color: ${(props) => props.theme.white};
   text-transform: uppercase;
   margin-bottom: 24px;
@@ -70,11 +69,11 @@ const CategoryIcon = styled.div`
   flex-shrink: 0;
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
 
     path {
-      fill: ${(props) => props.theme.amaranth};
+      fill: ${(props) => props.theme.roseDark};
     }
   }
 `;
@@ -109,20 +108,20 @@ const LandingPage = () => {
             </CategoryIcon>
             Venue
           </FeatureCategory>
-          <FeatureTitle>Find musicians tailored to your needs</FeatureTitle>
-          <FeatureText>From tiny bars to epic festivals, the right musicians make every venue better.</FeatureText>
-          <Button size="big" background="highlight-outline" content="Sign up" link="/login" />
+          <FeatureTitle>Find musicians tailored to your venue</FeatureTitle>
+          <FeatureText>From tiny bars to epic festivals, the right musicians make every place better.</FeatureText>
+          <Button size="big" background="highlight" content="Sign up as a venue" href="/register/venue" />
         </Feature>
         <Feature>
           <FeatureCategory>
             <CategoryIcon>
-              <SaxSVG />
+              <DrumsSVG />
             </CategoryIcon>
             Band
           </FeatureCategory>
-          <FeatureTitle>Play music you love at local venues</FeatureTitle>
-          <FeatureText>Gather a team of awesome musicians and gig on!</FeatureText>
-          <Button size="big" background="highlight-outline" content="Sign up" link="/login" />
+          <FeatureTitle>Play music you love at local bars</FeatureTitle>
+          <FeatureText>Gather a team of awesome musicians, record a demo and gig on!</FeatureText>
+          <Button size="big" background="highlight" content="Sign up as a band" href="/register/band" />
         </Feature>
       </FeaturesWrap>
       <Image />

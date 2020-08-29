@@ -8,6 +8,10 @@ const Canvas = styled.div`
   position: relative;
 `;
 
+const StyledTextLink = styled(TextLink)`
+  display: inline-block;
+`;
+
 const ButtonCanvas = styled.button`
   display: inline-block;
   position: relative;
@@ -23,6 +27,7 @@ const ButtonCanvas = styled.button`
   height: 36px;
   padding: 0 24px;
   font-size: 12px;
+  width: 100%;
   transition: background-color 0.2s, color 0.2s;
 
   ${({ size }) =>
@@ -44,27 +49,27 @@ const ButtonCanvas = styled.button`
   ${({ background, theme }) =>
     background === 'highlight' &&
     css`
-      background-color: ${(props) => props.theme.amaranth};
+      background-color: ${(props) => props.theme.roseDark};
       &:hover {
-        background: ${blendColors(theme.amaranth, '#FFFFFF', 0.125)};
+        background: ${blendColors(theme.roseDark, '#FFFFFF', 0.125)};
       }
       &:active {
-        background: ${blendColors(theme.amaranth, '#000000', 0.125)};
+        background: ${blendColors(theme.roseDark, '#000000', 0.125)};
       }
     `}
 
   ${({ background, theme }) =>
     background === 'highlight-outline' &&
     css`
-      border: 1px solid ${(props) => props.theme.amaranth};
-      color: ${(props) => props.theme.amaranth};
+      border: 1px solid ${(props) => props.theme.roseDark};
+      color: ${(props) => props.theme.roseDark};
 
       &:hover {
         color: ${(props) => props.theme.white};
-        background: ${blendColors(theme.amaranth, '#FFFFFF', 0.125)};
+        background: ${blendColors(theme.roseDark, '#FFFFFF', 0.125)};
       }
       &:active {
-        background: ${blendColors(theme.amaranth, '#000000', 0.125)};
+        background: ${blendColors(theme.roseDark, '#000000', 0.125)};
       }
     `}
     
@@ -92,14 +97,14 @@ const Button = ({
   size = 'small',
 }) => {
   const contentToDisplay = (
-    <ButtonCanvas className={className} size={size} onClick={onClick} type={type} background={background}>
+    <ButtonCanvas size={size} onClick={onClick} type={type} background={background}>
       {content}
     </ButtonCanvas>
   );
 
   return (
-    <Canvas>
-      {href && <TextLink href={href}>{contentToDisplay}</TextLink>}
+    <Canvas className={className}>
+      {href && <StyledTextLink href={href}>{contentToDisplay}</StyledTextLink>}
       {!href && contentToDisplay}
     </Canvas>
   );
