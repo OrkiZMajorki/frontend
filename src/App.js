@@ -1,9 +1,12 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
 import { Switch, Route, Redirect } from 'react-router-dom';
-
+import {createHttpLink, InMemoryCache} from '@apollo/client';
+import { ApolloProvider } from '@apollo/react-hooks';
+import ApolloClient from 'apollo-boost'
 import Webapp from './Webapp/Webapp';
 import Page404 from './Page404/Page404';
+import {API_URL} from "./ApiConstant";
 
 export const theme = {
   grey: '#646C77',
@@ -45,15 +48,26 @@ export const theme = {
 };
 
 function App() {
+    const httpLink = createHttpLink({
+        uri: API_URL
+    });
+
+    const client = new ApolloClient({
+        link: httpLink,
+        cache: new InMemoryCache()
+    });
+
   return (
-    <ThemeProvider theme={theme}>
-      <Switch>
-        <Route exact path="/" component={Webapp} />
-        <Route path="/:section/" component={Webapp} />
-        <Route path="/404" component={Page404} />
-        <Redirect to="/404" />
-      </Switch>
-    </ThemeProvider>
+      <ApolloProvider client={client}>
+        <ThemeProvider theme={theme}>
+        <Switch>
+          <Route exact path="/" component={Webapp} />
+          <Route path="/:section/" component={Webapp} />
+          <Route path="/404" component={Page404} />
+          <Redirect to="/404" />
+        </Switch>
+      </ThemeProvider>
+      </ApolloProvider>
   );
 }
 
