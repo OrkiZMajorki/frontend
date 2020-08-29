@@ -128,23 +128,12 @@ const Webapp = ({ theme = 'white' }) => {
         }`;
 
     const [createUser] = useMutation(CREATE_USER_QUERY);
-    // return (
-    //     < Canvas >
-    //         < Header
-    //             theme = {theme} >
-    //             < Left
-    //                 href = "/" >
-    //                 < LogoSVG / >
-    //                 < /Left>
-    //                 < Center >
-    //
-    //                     <Mutation mutation={CREATE_MUTATION} variables={{ username: 'dupa2', password: 'dupa', role: 'VENUE', email: 'dupa2@dupa.com'}}>
-    //                         {postMutation => <button onClick={postMutation}>Submit</button>}
-    //                     </Mutation>
-    //
-    //                     < StyledTextLink
-    //                         href = "/matching" > Matching < /StyledTextLink>
-    //                         < StyledTextLink
+
+    async function createNewUser() {
+        await createUser({variables: { username: 'dupa2', password: 'dupa', role: 'VENUE', email: 'dupa4@dupa.com'}})
+        // setName('')
+        // refetchUsers()
+    }
 
   return (
     <Canvas>
@@ -153,7 +142,7 @@ const Webapp = ({ theme = 'white' }) => {
           <LogoSVG />
         </Left>
         <Center>
-          <Button onClick={createUser({variables :{ username: 'dupa2', password: 'dupa', role: 'VENUE', email: 'dupa2@dupa.com'}})}>Testing my stuff</Button>
+          <Button onClick={createNewUser}>Testing my stuff</Button>
           <StyledTextLink href="/matching">Matching</StyledTextLink>
           <StyledTextLink href="/chat">Messages</StyledTextLink>
           <StyledTextLink href="/calendar">Calendar</StyledTextLink>
