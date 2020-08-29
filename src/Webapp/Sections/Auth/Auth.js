@@ -74,13 +74,13 @@ const BottomText = styled.div`
 `;
 
 const Auth = ({ mode, authenticate, user, location = '' }) => {
-  const [role, setRole] = useState(location.pathname.replace('/register/', '').replace('/login/', ''));
+  const [role, setRole] = useState(location.pathname.replace('/register/', '').replace('/login/', '').toUpperCase());
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   function onAuthenticate() {
-    authenticate({ role, name, email, password });
+    authenticate({ role, name, email, password }, mode);
   }
 
   return (
@@ -94,8 +94,8 @@ const Auth = ({ mode, authenticate, user, location = '' }) => {
               value={role}
               onChange={(e) => setRole(e.target.value)}
               options={[
-                { id: 1, value: 'venue', label: 'Venue' },
-                { id: 2, value: 'band', label: 'Musicians' },
+                { id: 1, value: 'VENUE', label: 'Venue' },
+                { id: 2, value: 'BAND', label: 'Musicians' },
               ]}
             />
             <StyledInput title="Name" value={name} onChange={(e) => setName(e.target.value)} />
