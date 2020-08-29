@@ -49,7 +49,8 @@ function App() {
     <ThemeProvider theme={theme}>
       <Switch>
         <Route exact path="/" component={Webapp} />
-        <Route exact path="/404" component={Page404} />
+        <Route path="/:section/" component={Webapp} />
+        <Route path="/404" component={Page404} />
         <Redirect to="/404" />
       </Switch>
     </ThemeProvider>
