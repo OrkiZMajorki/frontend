@@ -4,6 +4,7 @@ import Button from '../components/Button';
 import TextLink from '../components/TextLink';
 import { ReactComponent as LogoSVG } from '../media/logoWhite.svg';
 import Sections from './Sections/Sections';
+import { gql, useMutation, useQuery } from '@apollo/client';
 
 const Canvas = styled.div`
   height: 100%;
@@ -110,6 +111,37 @@ const Webapp = ({ color = 'white', type = 'regular' }) => {
     console.log('authenticated', newUser);
   }
 
+  const CREATE_USER_MUTATION = gql`
+    mutation CreateUser($username: String!, $password: String!, $role: String!, $email: String!) {
+      createUser(user: { username: $username, password: $password, role: $role, email: $email }) {
+        id
+        email
+      }
+    }
+  `;
+
+  const LOGIN_QUERY = gql`
+    query Login($email: String!, $password: String!) {
+      login(userLogin: { email: $email, password: $password }) {
+        id
+        username
+        role
+      }
+    }
+  `;
+
+  const [createUser] = useMutation(CREATE_USER_MUTATION);
+
+  const { loading, error, data } = useQuery(LOGIN_QUERY, { variables: { email: 'dupa4@dupa.com', password: 'dupa' } });
+
+  async function createNewUser() {
+    await createUser({ variables: { username: 'dupa2', password: 'dupa', role: 'VENUE', email: 'dupa4@dupa.com' } });
+  }
+
+  function loginUser() {
+    console.log(data);
+  }
+
   return (
     <Canvas>
       <Header color={color} type={type}>
@@ -117,6 +149,8 @@ const Webapp = ({ color = 'white', type = 'regular' }) => {
           <LogoSVG />
         </Left>
         <Center>
+          <Button onClick={createNewUser}>Testing my stuff</Button>
+          <Button onClick={loginUser}>Trying to login</Button>
           <StyledTextLink href="/matching">Matching</StyledTextLink>
           <StyledTextLink href="/chat">Messages</StyledTextLink>
           <StyledTextLink href="/calendar">Calendar</StyledTextLink>
