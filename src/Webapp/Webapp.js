@@ -5,6 +5,7 @@ import Button from '../components/Button';
 import TextLink from '../components/TextLink';
 import { ReactComponent as LogoSVG } from '../media/logoWhite.svg';
 import Sections from './Sections/Sections';
+import { gql, useMutation } from "@apollo/client"
 
 const Canvas = styled.div`
   height: 100%;
@@ -115,6 +116,25 @@ const Webapp = ({ theme = 'white' }) => {
         console.log('Date created: ', response[1].data);
       });
   }
+
+    const CREATE_USER_QUERY =
+        gql`
+    mutation CreateUser($username: String!, $password: String!, $role: String!, $email: String!) {
+          createUser(user: {username: $username, password: $password, role: $role, email: $email})
+            {
+            id
+            email
+            }
+        }`;
+
+    const [createUser] = useMutation(CREATE_USER_QUERY);
+
+    async function createNewUser() {
+        await createUser({variables: { username: 'dupa2', password: 'dupa', role: 'VENUE', email: 'dupa4@dupa.com'}})
+        // setName('')
+        // refetchUsers()
+    }
+
   return (
     <Canvas>
       <Header theme={theme}>
@@ -122,6 +142,7 @@ const Webapp = ({ theme = 'white' }) => {
           <LogoSVG />
         </Left>
         <Center>
+          <Button onClick={createNewUser}>Testing my stuff</Button>
           <StyledTextLink href="/matching">Matching</StyledTextLink>
           <StyledTextLink href="/chat">Messages</StyledTextLink>
           <StyledTextLink href="/calendar">Calendar</StyledTextLink>
