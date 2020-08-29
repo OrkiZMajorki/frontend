@@ -4,6 +4,8 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 
 import Webapp from './Webapp/Webapp';
 import Page404 from './Page404/Page404';
+import ApolloClient from 'apollo-boost';
+import {ApolloProvider} from "@apollo/client";
 
 export const theme = {
   grey: '#646C77',
@@ -45,8 +47,14 @@ export const theme = {
 };
 
 function App() {
+
+    const client = new ApolloClient({
+        uri: 'https://hacknarok-backend.herokuapp.com/graphql'
+    });
+
   return (
-    <ThemeProvider theme={theme}>
+      <ApolloProvider client={client}>
+      <ThemeProvider theme={theme}>
       <Switch>
         <Route exact path="/" component={Webapp} />
         <Route path="/:section/" component={Webapp} />
@@ -54,6 +62,7 @@ function App() {
         <Redirect to="/404" />
       </Switch>
     </ThemeProvider>
+      </ApolloProvider>
   );
 }
 
