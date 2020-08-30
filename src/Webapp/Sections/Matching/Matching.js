@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from '../../../components/Button';
 import Dropdown from '../../../components/Dropdown';
+import { gql, useMutation, useQuery } from '@apollo/client';
 
 const Canvas = styled.div`
   max-width: 1080px;
@@ -44,10 +45,32 @@ const Form = styled.div`
 
 const Matching = ({ user = {} }) => {
   const [formOpen, setFormOpen] = useState(true);
-  const [city, setCity] = useState('Krakow');
-  const [genre, setGenre] = useState('rock');
+  const [city, setCity] = useState('CRACOV');
+  const [genre, setGenre] = useState('ROCK');
   const role = user.role || 'VENUE';
 
+  const BAND_QUERY = gql`
+    query Band($genres: [String] !, $cities: [String] !) {
+      findBandsByGenreAndCity (
+        genres:$genres,
+        cities:$cities
+      )
+      {
+        id,
+        name,
+        description,
+        songUrl,
+        songName,
+        imageUrl,
+        cities,
+        musicGenres,}
+    }
+  `;
+  const { load, error, data } = useQuery(BAND_QUERY, { variables: { genres: [genre], cities: [city] } });
+  useEffect(() => {
+    console.log(data)
+
+  }, [data]);
   return (
     <Canvas>
       {formOpen && (
@@ -62,13 +85,13 @@ const Matching = ({ user = {} }) => {
                   onChange={(value) => setCity(value)}
                   options={[
                     { id: 1, value: 'Bydgoszcz', label: 'Bydgoszcz' },
-                    { id: 2, value: 'Gdansk', label: 'Gdańsk' },
-                    { id: 3, value: 'Krakow', label: 'Kraków' },
+                    { id: 2, value: 'GDANSK', label: 'Gdańsk' },
+                    { id: 3, value: 'CRACOV', label: 'Kraków' },
                     { id: 4, value: 'Lodz', label: 'Łódź' },
                     { id: 5, value: 'Poznan', label: 'Poznań' },
                     { id: 6, value: 'Szczecin', label: 'Szczecin' },
                     { id: 7, value: 'Warszawa', label: 'Warszawa' },
-                    { id: 8, value: 'Wroclaw', label: 'Wrocław' },
+                    { id: 8, value: 'WROCLAW', label: 'Wrocław' },
                   ]}
                 />
                 that play
@@ -77,8 +100,8 @@ const Matching = ({ user = {} }) => {
                   value={genre}
                   onChange={(value) => setGenre(value)}
                   options={[
-                    { id: 1, value: 'rock', label: 'rock' },
-                    { id: 2, value: 'hip-hop', label: 'hip-hop' },
+                    { id: 1, value: 'ROCK', label: 'rock' },
+                    { id: 2, value: 'RAP', label: 'hip-hop' },
                     { id: 3, value: 'pop', label: 'pop' },
                     { id: 4, value: 'country', label: 'country' },
                     { id: 5, value: 'jazz', label: 'jazz' },
