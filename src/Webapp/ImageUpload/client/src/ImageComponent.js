@@ -40,7 +40,7 @@ export default class ImageComponent extends Component {
 
     const types = ['image/png', 'image/jpeg', 'image/gif']
 
-    this.setState({ uploading: true })
+    
     const formData = new FormData();
     formData.append('file', files[0]);
     // replace this with your upload preset name
@@ -56,7 +56,10 @@ export default class ImageComponent extends Component {
       .then(res => {console.log(res);
         return res;
       })
-      .then(res => {this.setState({image_url: res.secure_url});console.log(res.secure_url);console.log(this.state)
+      .then(res => {this.props.onChange(res.secure_url)
+      console.log(res.secure_url);
+      console.log(this.state);
+      this.setState({ uploading: true });
     })
 
       .catch(err => console.log(err));
@@ -71,7 +74,7 @@ export default class ImageComponent extends Component {
         case loading:
           return <WakeUp />
         case uploading:
-          return <Spinner />
+          return <>Uploaded</>
         case images.length > 0:
           return <Images 
                   images={images} 

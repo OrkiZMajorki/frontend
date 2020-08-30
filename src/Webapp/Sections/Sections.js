@@ -2,12 +2,11 @@ import React from 'react';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import Matching from './Matching/Matching';
 import Messages from './Messages/Messages';
-
+import Calendar from './Calendar/Calendar';
 import LandingPage from './LandingPage/LandingPage';
 import Auth from './Auth/Auth';
 
-
-const Sections = () => {
+const Sections = ({ authenticate, ...props }) => {
   return (
     <Switch>
       <Route exact path="/matching" render={(props) => <Matching {...props} />} />
