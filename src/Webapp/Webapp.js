@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import styled, { css } from 'styled-components';
 import Button from '../components/Button';
 import TextLink from '../components/TextLink';
 import { ReactComponent as LogoSVG } from '../media/logoWhite.svg';
 import Sections from './Sections/Sections';
 import { gql, useMutation, useQuery } from '@apollo/client';
+import {withRouter} from "react-router-dom";
 
 const Canvas = styled.div`
   height: 100%;
@@ -113,19 +114,35 @@ const StyledTextLink = styled(TextLink)`
   }
 `;
 
-const Webapp = ({ color = 'white', type = 'regular' }) => {
+const Webapp = ({ color = 'white', type = 'regular', history}) => {
   const [user, setUser] = useState();
-
-  function authenticate(newUser) {
-    setUser(newUser);
-    console.log('authenticated', newUser);
-  }
+  const [mode, setMode] = useState();
 
   const CREATE_USER_MUTATION = gql`
     mutation CreateUser($username: String!, $password: String!, $role: String!, $email: String!) {
       createUser(user: { username: $username, password: $password, role: $role, email: $email }) {
         id
         email
+        role
+        username
+      }
+    }
+  `;
+
+  const CREATE_VENUE_MUTATION = gql`
+    mutation CreateVenue($name: String!, $userId: ID!) {
+      createVenue(venue: { name: $name }, userId: $userId) {
+        id
+        name
+      }
+    }
+  `;
+
+  const CREATE_BAND_MUTATION = gql`
+    mutation CreateBand($name: String!, $userId: ID!, $imageUrl: String) {
+      createBand(band: { name: $name, imageUrl: $imageUrl }, userId: $userId) {
+        id
+        name
       }
     }
   `;
@@ -135,22 +152,62 @@ const Webapp = ({ color = 'white', type = 'regular' }) => {
       login(userLogin: { email: $email, password: $password }) {
         id
         username
+        email
         role
       }
     }
   `;
 
   const [createUser] = useMutation(CREATE_USER_MUTATION);
+  const [createVenue] = useMutation(CREATE_VENUE_MUTATION);
+  const [createBand] = useMutation(CREATE_BAND_MUTATION);
 
-  const { loading, error, data } = useQuery(LOGIN_QUERY, { variables: { email: 'dupa4@dupa.com', password: 'dupa' } });
+  const {load, error, data} = useQuery(LOGIN_QUERY, {variables: { email: (user || {}).email, password: (user || {}).password } });
+  useEffect(() => {
+      if (mode === 'login' && data) {
+          const userdata = data.login;
+          setUser({name: userdata.username, email: userdata.email, role: userdata.role, id: userdata.id});
+          history.push('/matching');
+      }
+  }, [data]);
 
-  async function createNewUser() {
-    await createUser({ variables: { username: 'dupa2', password: 'dupa', role: 'VENUE', email: 'dupa4@dupa.com' } });
+  async function createNewUser(newUser) {
+    return await createUser({ variables: { username: newUser.name, password: newUser.password, role: newUser.role, email: newUser.email } });
   }
 
-  function loginUser() {
-    console.log(data);
+  async function createNewVenue(name, userId) {
+    return await createVenue({ variables: { name, userId }});
   }
+
+  async function createNewBand(name, userId, imageUrl) {
+    return await createBand({ variables: { name, userId, imageUrl }});
+  }
+
+  function authenticate(newUser, mode, imageUrl) {
+    setUser(newUser);
+    setMode(mode);
+
+    if (mode === 'register') {
+        createNewUser(newUser)
+            .then((response) => {
+                    const createdUser = response.data.createUser;
+                    const userId = createdUser.id;
+                    const userRole = createdUser.role;
+                    const username = createdUser.username;
+
+                    if (userRole === 'VENUE') {
+                        createNewVenue(username, userId);
+                    } else if (userRole === 'BAND') {
+                        createNewBand(username, userId, imageUrl);
+                    }
+
+                    setUser({...newUser, id: userId});
+                }
+            );
+    }
+
+        history.push('/matching');
+    }
 
   return (
     <Canvas>
@@ -172,10 +229,8 @@ const Webapp = ({ color = 'white', type = 'regular' }) => {
         </Right>
       </Header>
       <Sections authenticate={authenticate} user={user} />
-      <Button onClick={createNewUser}>Testing my stuff</Button>
-      <Button onClick={loginUser}>Trying to login</Button>
     </Canvas>
   );
 };
 
-export default Webapp;
+export default withRouter(Webapp);
