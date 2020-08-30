@@ -113,6 +113,17 @@ const Webapp = ({ color = 'white', type = 'regular', history }) => {
       createUser(user: { username: $username, password: $password, role: $role, email: $email }) {
         id
         email
+        role
+        username
+      }
+    }
+  `;
+
+  const CREATE_VENUE_MUTATION = gql`
+    mutation CreateVenue($name: String!, $userId: ID!) {
+      createVenue(venue: { name: $name }, userId: $userId) {
+        id
+        name
       }
     }
   `;
@@ -128,6 +139,7 @@ const Webapp = ({ color = 'white', type = 'regular', history }) => {
   `;
 
   const [createUser] = useMutation(CREATE_USER_MUTATION);
+  const [createVenue] = useMutation(CREATE_VENUE_MUTATION);
   const {load, error, data} = useQuery(LOGIN_QUERY, {variables: { email: (user || {}).email, password: (user || {}).password } });
   useEffect(() => {
       if (mode === 'login') {
@@ -136,18 +148,36 @@ const Webapp = ({ color = 'white', type = 'regular', history }) => {
   }, [data]);
 
   async function createNewUser(newUser) {
-    await createUser({ variables: { username: newUser.name, password: newUser.password, role: newUser.role, email: newUser.email } });
+    return await createUser({ variables: { username: newUser.name, password: newUser.password, role: newUser.role, email: newUser.email } });
   }
+
+  async function createNewVenue(name, userId) {
+      console.log(name, userId);
+    return await createVenue({ variables: { name, userId }});
+  }
+
 
   function authenticate(newUser, mode) {
     setUser(newUser);
     setMode(mode);
 
     if (mode === 'register') {
-        createNewUser(newUser);
+        createNewUser(newUser)
+            .then((response) => {
+                    const createdUser = response.data.createUser;
+                    const userId = createdUser.id;
+                    const userRole = createdUser.role;
+                    const username = createdUser.username;
+
+                    if (userRole === 'VENUE') {
+                        createNewVenue(username, userId);
+                    }
+                }
+            );
+    }
+
         history.push('/matching');
     }
-  }
 
   return (
     <Canvas>
