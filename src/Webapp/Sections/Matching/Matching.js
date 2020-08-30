@@ -8,6 +8,7 @@ import { ReactComponent as PlaySVG } from '../../../media/play.svg';
 import { ReactComponent as PauseSVG } from '../../../media/pause.svg';
 import { ReactComponent as HeartEmptySVG } from '../../../media/heartEmpty.svg';
 import { ReactComponent as HeartFilledSVG } from '../../../media/heartFilled.svg';
+import { gql, useMutation, useQuery } from '@apollo/client';
 
 const Canvas = styled.div`
   max-width: 1080px;
@@ -183,62 +184,44 @@ const Timestamps = styled.div`
   font-family: monospace;
 `;
 
-const bands = [
-  {
-    id: 1,
-    image:
-      'https://images.unsplash.com/photo-1517230878791-4d28214057c2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80',
-    audio: 'http://www.hochmuth.com/mp3/Beethoven_12_Variation.mp3',
-    audioName: 'Let it go',
-    name: 'Yulia Brodskaya',
-    description:
-      "Hi! I am such a nice girl and I can sing so well. Please hire me I promise I won't cry haha. This is some dummy text that is used to see what long sentences look like!",
-    liked: false,
-  },
-  {
-    id: 2,
-    image:
-      'https://images.unsplash.com/flagged/photo-1576364255488-17bdd8cba58c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1432&q=80',
-    audio: 'http://www.hochmuth.com/mp3/Tchaikovsky_Rococo_Var_orch.mp3',
-    audioName: 'tylko jedno w głowie mam',
-    name: 'Cypis',
-    description: 'Hi!',
-    liked: true,
-  },
-  {
-    id: 3,
-    image:
-      'https://lastfm.freetls.fastly.net/i/u/770x0/a14e24edf5d447cb89f1f6e8ae3df0f8.webp#a14e24edf5d447cb89f1f6e8ae3df0f8',
-    audio: 'http://www.hochmuth.com/mp3/Haydn_Adagio.mp3',
-    audioName: '1 2 3 4!',
-    name: 'Sex Bo-bomb',
-    description: 'Hi!',
-    liked: false,
-  },
-  {
-    id: 4,
-    image:
-      'https://images.unsplash.com/photo-1598300023464-f5bd5dcf1665?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1951&q=80',
-    audio: 'http://www.hochmuth.com/mp3/Boccherini_Concerto_478-1.mp3',
-    audioName: 'Hip',
-    name: 'Mamamoo',
-    description: 'Hi!',
-    liked: true,
-  },
-];
-
 const Matching = ({ user = {} }) => {
-  const [formOpen, setFormOpen] = useState(false);
-  const [city, setCity] = useState('Krakow');
-  const [genre, setGenre] = useState('rock');
+  const [formOpen, setFormOpen] = useState(true);
+  const [city, setCity] = useState('CRACOV');
+  const [genre, setGenre] = useState('ROCK');
+  const [bands, setBands] = useState([]);
+  console.log(bands);
   const role = user.role || 'VENUE';
 
-  const [activeBand, setActiveBand] = useState(bands[0]);
+  const [activeBand, setActiveBand] = useState((bands || [])[0]);
   const [activeBandIndex, setActiveBandIndex] = useState(0);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [audioTime, setAudioTime] = useState(0);
 
   const audioRef = useRef();
+  const BAND_QUERY = gql`
+    query Band($genres: [String]!, $cities: [String]!) {
+      findBandsByGenreAndCity(genres: $genres, cities: $cities) {
+        id
+        name
+        description
+        songUrl
+        songName
+        imageUrl
+        cities
+        musicGenres
+      }
+    }
+  `;
+
+  const { data } = useQuery(BAND_QUERY, { variables: { genres: [genre], cities: [city] } });
+
+  useEffect(() => {
+    if (data) {
+      console.log(data.findBandsByGenreAndCity);
+      setBands(data.findBandsByGenreAndCity);
+      setActiveBand(data.findBandsByGenreAndCity[0]);
+    }
+  }, [data]);
 
   function keydownEventListener(event) {
     if (event.keyCode === 37) {
@@ -304,13 +287,13 @@ const Matching = ({ user = {} }) => {
                   onChange={(value) => setCity(value)}
                   options={[
                     { id: 1, value: 'Bydgoszcz', label: 'Bydgoszcz' },
-                    { id: 2, value: 'Gdansk', label: 'Gdańsk' },
-                    { id: 3, value: 'Krakow', label: 'Kraków' },
+                    { id: 2, value: 'GDANSK', label: 'Gdańsk' },
+                    { id: 3, value: 'CRACOV', label: 'Kraków' },
                     { id: 4, value: 'Lodz', label: 'Łódź' },
                     { id: 5, value: 'Poznan', label: 'Poznań' },
                     { id: 6, value: 'Szczecin', label: 'Szczecin' },
                     { id: 7, value: 'Warszawa', label: 'Warszawa' },
-                    { id: 8, value: 'Wroclaw', label: 'Wrocław' },
+                    { id: 8, value: 'WROCLAW', label: 'Wrocław' },
                   ]}
                 />
                 that play
@@ -319,12 +302,12 @@ const Matching = ({ user = {} }) => {
                   value={genre}
                   onChange={(value) => setGenre(value)}
                   options={[
-                    { id: 1, value: 'rock', label: 'rock' },
-                    { id: 2, value: 'hip-hop', label: 'hip-hop' },
+                    { id: 1, value: 'ROCK', label: 'rock' },
+                    { id: 2, value: 'RAP', label: 'hip-hop' },
                     { id: 3, value: 'pop', label: 'pop' },
                     { id: 4, value: 'country', label: 'country' },
                     { id: 5, value: 'jazz', label: 'jazz' },
-                    { id: 6, value: 'classical', label: 'classical' },
+                    { id: 6, value: 'CLASSIC', label: 'classical' },
                     { id: 7, value: 'folk', label: 'folk' },
                     { id: 8, value: 'metal', label: 'metal' },
                   ]}
@@ -340,12 +323,12 @@ const Matching = ({ user = {} }) => {
                   value={genre}
                   onChange={(value) => setGenre(value)}
                   options={[
-                    { id: 1, value: 'rock', label: 'rock' },
-                    { id: 2, value: 'hip-hop', label: 'hip-hop' },
+                    { id: 1, value: 'ROCK', label: 'rock' },
+                    { id: 2, value: 'RAP', label: 'hip-hop' },
                     { id: 3, value: 'pop', label: 'pop' },
                     { id: 4, value: 'country', label: 'country' },
-                    { id: 5, value: 'jazz', label: 'jazz' },
-                    { id: 6, value: 'classical', label: 'classical' },
+                    { id: 5, value: 'JAZZ', label: 'jazz' },
+                    { id: 6, value: 'CLASSIC', label: 'classical' },
                     { id: 7, value: 'folk', label: 'folk' },
                     { id: 8, value: 'metal', label: 'metal' },
                   ]}
@@ -357,13 +340,13 @@ const Matching = ({ user = {} }) => {
                   onChange={(value) => setCity(value)}
                   options={[
                     { id: 1, value: 'Bydgoszcz', label: 'Bydgoszcz' },
-                    { id: 2, value: 'Gdansk', label: 'Gdańsk' },
-                    { id: 3, value: 'Krakow', label: 'Kraków' },
+                    { id: 2, value: 'GDANSK', label: 'Gdańsk' },
+                    { id: 3, value: 'CRACOV', label: 'Kraków' },
                     { id: 4, value: 'Lodz', label: 'Łódź' },
                     { id: 5, value: 'Poznan', label: 'Poznań' },
                     { id: 6, value: 'Szczecin', label: 'Szczecin' },
                     { id: 7, value: 'Warszawa', label: 'Warszawa' },
-                    { id: 8, value: 'Wroclaw', label: 'Wrocław' },
+                    { id: 8, value: 'WROCLAW', label: 'Wrocław' },
                   ]}
                 />
               </>
@@ -376,12 +359,12 @@ const Matching = ({ user = {} }) => {
           />
         </>
       )}
-      {!formOpen && (
+      {!formOpen && bands.length && (
         <>
           <Slideshow>
             <SlidesWrap index={activeBandIndex} count={bands.length}>
               {bands.map((band, i) => (
-                <Slide key={band.id} image={band.image} active={i === activeBandIndex}>
+                <Slide key={band.id} image={band.imageUrl} active={i === activeBandIndex}>
                   <Description>{band.description}</Description>
                   {band.liked ? (
                     <HeartFilledSVG onClick={() => (band.liked = false)} />
@@ -395,7 +378,7 @@ const Matching = ({ user = {} }) => {
           <Player>
             <Info>
               <BandName>{activeBand.name}</BandName>
-              <SongName>{activeBand.audioName}</SongName>
+              <SongName>{activeBand.songName}</SongName>
             </Info>
             <Controls>
               <PrevSVG onClick={goPrev} />
@@ -410,7 +393,7 @@ const Matching = ({ user = {} }) => {
               {parseInt((audioRef.current || {}).duration % 60) || '00'}
             </Timestamps>
           </Player>
-          <audio src={activeBand.audio} ref={audioRef} />
+          <audio src={activeBand.songUrl} ref={audioRef} />
         </>
       )}
     </Canvas>
