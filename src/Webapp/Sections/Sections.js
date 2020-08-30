@@ -6,10 +6,10 @@ import Calendar from './Calendar/Calendar';
 import LandingPage from './LandingPage/LandingPage';
 import Auth from './Auth/Auth';
 
-const Sections = ({ authenticate, ...props }) => {
+const Sections = ({ authenticate, user, ...props }) => {
   return (
     <Switch>
-      <Route exact path="/matching" render={(props) => <Matching {...props} />} />
+      <Route exact path="/matching" render={(props) => <Matching user={user} {...props} />} />
       <Route exact path="/chat" render={(props) => <Messages {...props} />} />
       <Route exact path="/calendar" render={(props) => <Calendar {...props} />} />
       <Route exact path="/login" render={(props) => <Auth mode="login" authenticate={authenticate} {...props} />} />

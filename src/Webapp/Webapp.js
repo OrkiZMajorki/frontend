@@ -90,8 +90,18 @@ const Left = styled.a`
 
 const Center = styled.nav`
   display: block;
-  font-weight: 560;
+  font-weight: 500;
   font-size: 16px;
+`;
+
+const Right = styled.div`
+  width: 128px;
+  text-align: right;
+`;
+
+const Username = styled.div`
+  font-size: 16px;
+  margin-right: 8px;
 `;
 
 const StyledTextLink = styled(TextLink)`
@@ -104,7 +114,7 @@ const StyledTextLink = styled(TextLink)`
 `;
 
 const Webapp = ({ color = 'white', type = 'regular' }) => {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState();
 
   function authenticate(newUser) {
     setUser(newUser);
@@ -149,15 +159,21 @@ const Webapp = ({ color = 'white', type = 'regular' }) => {
           <LogoSVG />
         </Left>
         <Center>
-          <Button onClick={createNewUser}>Testing my stuff</Button>
-          <Button onClick={loginUser}>Trying to login</Button>
           <StyledTextLink href="/matching">Matching</StyledTextLink>
           <StyledTextLink href="/chat">Messages</StyledTextLink>
           <StyledTextLink href="/calendar">Calendar</StyledTextLink>
         </Center>
-        {user.name ? <>{user.name}</> : <Button background="white-outline" href="/login" content="Sign in"></Button>}
+        <Right>
+          {user ? (
+            <Username>{user.name}</Username>
+          ) : (
+            <Button background="white-outline" href="/login" content="Sign in"></Button>
+          )}
+        </Right>
       </Header>
       <Sections authenticate={authenticate} user={user} />
+      <Button onClick={createNewUser}>Testing my stuff</Button>
+      <Button onClick={loginUser}>Trying to login</Button>
     </Canvas>
   );
 };
