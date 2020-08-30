@@ -4,7 +4,7 @@ import Input from '../../../components/Input';
 import Dropdown from '../../../components/Dropdown';
 import TextLink from '../../../components/TextLink';
 import Button from '../../../components/Button';
-
+import ImageComponent from '../ImageUpload/client/src/ImageComponent';
 const Canvas = styled.div`
   max-width: 1080px;
   margin: 64px auto 0;
@@ -82,7 +82,7 @@ const Auth = ({ mode, authenticate, user, location = '' }) => {
   function onAuthenticate() {
     authenticate({ role, name, email, password });
   }
-
+  
   return (
     <Canvas>
       <Card>
@@ -104,6 +104,7 @@ const Auth = ({ mode, authenticate, user, location = '' }) => {
         <StyledInput type="email" title="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
         <StyledInput type="password" title="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <StyledButton size="big" content="Sign in" onClick={onAuthenticate} />
+        <ImageComponent/>
         <BottomText>
           {mode === 'login' ? (
             <>
