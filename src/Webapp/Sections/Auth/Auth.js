@@ -80,7 +80,7 @@ const Auth = ({ mode, authenticate, user, location = '' }) => {
   const [password, setPassword] = useState('');
 
   function onAuthenticate() {
-    authenticate({ role, name, email, password });
+    authenticate({ role, name, email, password }, mode);
   }
 
   console.log(role);
