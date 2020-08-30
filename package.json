@@ -26,7 +26,8 @@
     "apollo-boost": "latest",
     "graphql-tag": "^2.11.0",
     "graphql": "^15.3.0",
-    "react-apollo": "3.0.0"
+    "react-apollo": "3.0.0",
+    "create-react-class": "15.6.3"
   },
   "scripts": {
     "start": "react-scripts start",
