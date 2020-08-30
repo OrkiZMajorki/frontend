@@ -22,6 +22,7 @@ const Image = styled.div`
   width: 100%;
   height: calc(100% - 320px);
   z-index: -2;
+  background: #000;
   background-image: url(${ConcertJPG});
   background-size: cover;
   background-position: top;

@@ -8,15 +8,18 @@ const Field = styled.input`
   width: 100%;
   min-width: 0;
   margin: 0;
-  font-size: inherit;
   appearance: none;
   padding: 12px;
-  display: flex;
+  display: inline-block;
   border-radius: 4px;
   background: ${(props) => props.theme.white};
-  margin-top: 8px;
   height: 40px;
   border: 1px solid ${(props) => props.theme.silverDark};
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  font-weight: inherit;
+  line-height: inherit;
 
   &::placeholder {
     color: ${(props) => props.theme.greyLight};
