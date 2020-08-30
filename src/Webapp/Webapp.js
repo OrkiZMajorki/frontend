@@ -138,6 +138,15 @@ const Webapp = ({ color = 'white', type = 'regular', history}) => {
     }
   `;
 
+  const CREATE_BAND_MUTATION = gql`
+    mutation CreateBand($name: String!, $userId: ID!) {
+      createBand(band: { name: $name }, userId: $userId) {
+        id
+        name
+      }
+    }
+  `;
+
   const LOGIN_QUERY = gql`
     query Login($email: String!, $password: String!) {
       login(userLogin: { email: $email, password: $password }) {
@@ -151,6 +160,8 @@ const Webapp = ({ color = 'white', type = 'regular', history}) => {
 
   const [createUser] = useMutation(CREATE_USER_MUTATION);
   const [createVenue] = useMutation(CREATE_VENUE_MUTATION);
+  const [createBand] = useMutation(CREATE_BAND_MUTATION);
+
   const {load, error, data} = useQuery(LOGIN_QUERY, {variables: { email: (user || {}).email, password: (user || {}).password } });
   useEffect(() => {
       if (mode === 'login' && data) {
@@ -168,6 +179,9 @@ const Webapp = ({ color = 'white', type = 'regular', history}) => {
     return await createVenue({ variables: { name, userId }});
   }
 
+  async function createNewBand(name, userId) {
+    return await createBand({ variables: { name, userId }});
+  }
 
   function authenticate(newUser, mode) {
     setUser(newUser);
@@ -183,7 +197,11 @@ const Webapp = ({ color = 'white', type = 'regular', history}) => {
 
                     if (userRole === 'VENUE') {
                         createNewVenue(username, userId);
+                    } else if (userRole === 'BAND') {
+                        createNewBand(username, userId);
                     }
+
+                    setUser({...newUser, id: userId});
                 }
             );
     }
