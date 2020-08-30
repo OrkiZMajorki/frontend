@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect, useRef } from 'react';
+import styled, { css } from 'styled-components';
 import Button from '../../../components/Button';
 import Dropdown from '../../../components/Dropdown';
+import { ReactComponent as PrevSVG } from '../../../media/previous.svg';
+import { ReactComponent as NextSVG } from '../../../media/next.svg';
+import { ReactComponent as PlaySVG } from '../../../media/play.svg';
+import { ReactComponent as PauseSVG } from '../../../media/pause.svg';
+import { ReactComponent as HeartEmptySVG } from '../../../media/heartEmpty.svg';
+import { ReactComponent as HeartFilledSVG } from '../../../media/heartFilled.svg';
 
 const Canvas = styled.div`
   max-width: 1080px;
@@ -42,11 +48,211 @@ const Form = styled.div`
   font-weight: 300;
 `;
 
+const Slideshow = styled.div`
+  position: absolute;
+  display: flex;
+  top: 140px;
+  left: 0;
+  width: 100%;
+  height: 500px;
+  overflow-x: hidden;
+`;
+
+const SlidesWrap = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 15%;
+  transform: ${({ index, count }) => `translateX(${-1 * index * (275.5 / count)}%)`};
+  transition: transform 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+`;
+
+const Slide = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  width: 60%;
+  height: 100%;
+  margin: 0 64px;
+  background: ${(props) => `url(${props.image}) no-repeat center center`};
+  background-size: cover;
+  padding: 16px;
+  transition: opacity 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+
+  ${({ active }) =>
+    !active &&
+    css`
+      opacity: 0.3;
+    `};
+
+  svg {
+    height: 40px;
+    width: 40px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+  }
+
+  &:hover {
+    svg {
+      opacity: 1;
+    }
+  }
+`;
+
+const Player = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: ${(props) => props.theme.white};
+`;
+
+const Info = styled.div`
+  width: 200px;
+`;
+
+const BandName = styled.div`
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+`;
+
+const SongName = styled.div`
+  font-size: 16px;
+  font-weight: 400;
+`;
+
+const Controls = styled.div`
+  display: flex;
+  align-items: center;
+  width: 140px;
+  justify-content: space-between;
+
+  svg {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+
+    path {
+      fill: ${(props) => props.theme.white};
+    }
+  }
+`;
+
+const PlayButton = styled.div`
+  svg {
+    width: 48px;
+    height: 48px;
+  }
+`;
+
+const Timestamps = styled.div`
+  width: 200px;
+  font-size: 16px;
+  text-align: right;
+  font-family: monospace;
+`;
+
+const bands = [
+  {
+    id: 1,
+    image:
+      'https://images.unsplash.com/photo-1517230878791-4d28214057c2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80',
+    audio: 'http://www.hochmuth.com/mp3/Beethoven_12_Variation.mp3',
+    audioName: 'Let it go',
+    name: 'Yulia Brodskaya',
+    description: 'Hi!',
+    liked: false,
+  },
+  {
+    id: 2,
+    image:
+      'https://images.unsplash.com/flagged/photo-1576364255488-17bdd8cba58c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1432&q=80',
+    audio: 'http://www.hochmuth.com/mp3/Tchaikovsky_Rococo_Var_orch.mp3',
+    audioName: 'tylko jedno w głowie mam',
+    name: 'Cypis',
+    description: 'Hi!',
+    liked: true,
+  },
+  {
+    id: 3,
+    image:
+      'https://lastfm.freetls.fastly.net/i/u/770x0/a14e24edf5d447cb89f1f6e8ae3df0f8.webp#a14e24edf5d447cb89f1f6e8ae3df0f8',
+    audio: 'http://www.hochmuth.com/mp3/Haydn_Adagio.mp3',
+    audioName: '1 2 3 4!',
+    name: 'Sex Bo-bomb',
+    description: 'Hi!',
+    liked: false,
+  },
+  {
+    id: 4,
+    image:
+      'https://images.unsplash.com/photo-1598300023464-f5bd5dcf1665?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1951&q=80',
+    audio: 'http://www.hochmuth.com/mp3/Boccherini_Concerto_478-1.mp3',
+    audioName: 'Hip',
+    name: 'Mamamoo',
+    description: 'Hi!',
+    liked: true,
+  },
+];
+
 const Matching = ({ user = {} }) => {
-  const [formOpen, setFormOpen] = useState(true);
+  const [formOpen, setFormOpen] = useState(false);
   const [city, setCity] = useState('Krakow');
   const [genre, setGenre] = useState('rock');
   const role = user.role || 'VENUE';
+
+  const [activeBand, setActiveBand] = useState(bands[0]);
+  const [activeBandIndex, setActiveBandIndex] = useState(0);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+
+  const audioRef = useRef();
+
+  function keydownEventListener(event) {
+    if (event.keyCode === 37) {
+      goPrev();
+    } else if (event.keyCode === 39) {
+      goNext();
+    } else if (event.keyCode === 32) {
+      toggleAudio();
+    }
+  }
+
+  useEffect(() => {
+    setActiveBand(bands[activeBandIndex]);
+  }, [activeBandIndex]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', keydownEventListener);
+    return () => {
+      document.removeEventListener('keydown', keydownEventListener);
+    };
+  });
+
+  function goPrev() {
+    if (audioPlaying) toggleAudio();
+    setActiveBandIndex(activeBandIndex - 1 < 0 ? bands.length - 1 : activeBandIndex - 1);
+  }
+
+  function goNext() {
+    if (audioPlaying) toggleAudio();
+    setActiveBandIndex(activeBandIndex + 1 > bands.length - 1 ? 0 : activeBandIndex + 1);
+  }
+
+  function toggleAudio() {
+    if (audioPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setAudioPlaying(!audioPlaying);
+  }
 
   return (
     <Canvas>
@@ -134,7 +340,36 @@ const Matching = ({ user = {} }) => {
           />
         </>
       )}
-      {!formOpen && 'kafelki, że mucha nie siada'}
+      {!formOpen && (
+        <>
+          <Slideshow>
+            <SlidesWrap index={activeBandIndex} count={bands.length}>
+              {bands.map((band, i) => (
+                <Slide key={band.id} image={band.image} active={i === activeBandIndex}>
+                  {band.liked ? (
+                    <HeartFilledSVG onClick={() => (bands[i].liked = false)} />
+                  ) : (
+                    <HeartEmptySVG onClick={() => (bands[i].liked = true)} />
+                  )}
+                </Slide>
+              ))}
+            </SlidesWrap>
+          </Slideshow>
+          <Player>
+            <Info>
+              <BandName>{activeBand.name}</BandName>
+              <SongName>{activeBand.audioName}</SongName>
+            </Info>
+            <Controls>
+              <PrevSVG onClick={goPrev} />
+              <PlayButton onClick={toggleAudio}>{audioPlaying ? <PauseSVG /> : <PlaySVG />}</PlayButton>
+              <NextSVG onClick={goNext} />
+            </Controls>
+            <Timestamps>00:45 - 3:48</Timestamps>
+          </Player>
+          <audio src={activeBand.audio} ref={audioRef} />
+        </>
+      )}
     </Canvas>
   );
 };
