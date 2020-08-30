@@ -69,6 +69,7 @@ const SlidesWrap = styled.div`
 `;
 
 const Slide = styled.div`
+  position: relative;
   display: flex;
   justify-content: flex-end;
   flex-shrink: 0;
@@ -77,7 +78,7 @@ const Slide = styled.div`
   margin: 0 64px;
   background: ${(props) => `url(${props.image}) no-repeat center center`};
   background-size: cover;
-  padding: 16px;
+  padding: 32px;
   transition: opacity 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
 
   ${({ active }) =>
@@ -89,16 +90,32 @@ const Slide = styled.div`
   svg {
     height: 40px;
     width: 40px;
-    opacity: 0;
     transition: opacity 0.2s;
     cursor: pointer;
+    fill: ${(props) => props.theme.roseDark};
+    z-index: 3;
   }
+`;
 
-  &:hover {
-    svg {
-      opacity: 1;
-    }
-  }
+const Description = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  padding: 32px;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.8) 15%,
+    rgba(0, 0, 0, 0) 30%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  color: ${(props) => props.theme.silverLight};
+  display: flex;
+  align-items: flex-end;
+  font-size: 16px;
+  line-height: 24px;
 `;
 
 const Player = styled.div`
@@ -140,7 +157,14 @@ const Controls = styled.div`
     cursor: pointer;
 
     path {
+      transition: fill 0.2s;
       fill: ${(props) => props.theme.white};
+    }
+
+    &:hover {
+      path {
+        fill: ${(props) => props.theme.silver};
+      }
     }
   }
 `;
@@ -167,7 +191,8 @@ const bands = [
     audio: 'http://www.hochmuth.com/mp3/Beethoven_12_Variation.mp3',
     audioName: 'Let it go',
     name: 'Yulia Brodskaya',
-    description: 'Hi!',
+    description:
+      "Hi! I am such a nice girl and I can sing so well. Please hire me I promise I won't cry haha. This is some dummy text that is used to see what long sentences look like!",
     liked: false,
   },
   {
@@ -211,6 +236,7 @@ const Matching = ({ user = {} }) => {
   const [activeBand, setActiveBand] = useState(bands[0]);
   const [activeBandIndex, setActiveBandIndex] = useState(0);
   const [audioPlaying, setAudioPlaying] = useState(false);
+  const [audioTime, setAudioTime] = useState(0);
 
   const audioRef = useRef();
 
@@ -230,8 +256,18 @@ const Matching = ({ user = {} }) => {
 
   useEffect(() => {
     document.addEventListener('keydown', keydownEventListener);
+    const currentAudioRef = audioRef.current;
+    currentAudioRef &&
+      currentAudioRef.addEventListener('timeupdate', () => {
+        setAudioTime(currentAudioRef.currentTime);
+      });
+
     return () => {
       document.removeEventListener('keydown', keydownEventListener);
+      currentAudioRef &&
+        currentAudioRef.removeEventListener('timeupdate', () => {
+          setAudioTime(currentAudioRef.currentTime);
+        });
     };
   });
 
@@ -346,10 +382,11 @@ const Matching = ({ user = {} }) => {
             <SlidesWrap index={activeBandIndex} count={bands.length}>
               {bands.map((band, i) => (
                 <Slide key={band.id} image={band.image} active={i === activeBandIndex}>
+                  <Description>{band.description}</Description>
                   {band.liked ? (
-                    <HeartFilledSVG onClick={() => (bands[i].liked = false)} />
+                    <HeartFilledSVG onClick={() => (band.liked = false)} />
                   ) : (
-                    <HeartEmptySVG onClick={() => (bands[i].liked = true)} />
+                    <HeartEmptySVG onClick={() => (band.liked = true)} />
                   )}
                 </Slide>
               ))}
@@ -365,7 +402,13 @@ const Matching = ({ user = {} }) => {
               <PlayButton onClick={toggleAudio}>{audioPlaying ? <PauseSVG /> : <PlaySVG />}</PlayButton>
               <NextSVG onClick={goNext} />
             </Controls>
-            <Timestamps>00:45 - 3:48</Timestamps>
+            <Timestamps>
+              {String(parseInt(audioTime / 60, 10)).padStart(2, '0')}:
+              {String(parseInt(audioTime % 60)).padStart(2, '0')}
+              {' - '}
+              {parseInt((audioRef.current || {}).duration / 60, 10) || '00'}:
+              {parseInt((audioRef.current || {}).duration % 60) || '00'}
+            </Timestamps>
           </Player>
           <audio src={activeBand.audio} ref={audioRef} />
         </>

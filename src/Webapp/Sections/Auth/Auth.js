@@ -5,6 +5,7 @@ import Dropdown from '../../../components/Dropdown';
 import TextLink from '../../../components/TextLink';
 import Button from '../../../components/Button';
 import ImageComponent from '../../ImageUpload/client/src/ImageComponent';
+
 const Canvas = styled.div`
   max-width: 1080px;
   margin: 64px auto 0;
@@ -45,6 +46,7 @@ const Card = styled.div`
   border-radius: 4px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.24);
   background: ${(props) => props.theme.white};
+  color: ${(props) => props.theme.greyDark};
 `;
 
 const CardTitle = styled.h2`
@@ -84,6 +86,8 @@ const Auth = ({ mode, authenticate, user, location = '' }) => {
     authenticate({ role, name, email, password }, mode, imageUrl);
   }
 
+  console.log(mode);
+
   return (
     <Canvas>
       <Card>
@@ -103,7 +107,19 @@ const Auth = ({ mode, authenticate, user, location = '' }) => {
           </>
         )}
         <StyledInput type="email" title="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <StyledInput type="password" title="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>       { role === 'BAND' && <ImageComponent onChange={(value) => {setUrl(value)} } /> }
+        <StyledInput
+          type="password"
+          title="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />{' '}
+        {role === 'BAND' && mode === 'register' && (
+          <ImageComponent
+            onChange={(value) => {
+              setUrl(value);
+            }}
+          />
+        )}
         <StyledButton size="big" content="Sign in" onClick={onAuthenticate} />
         <BottomText>
           {mode === 'login' ? (

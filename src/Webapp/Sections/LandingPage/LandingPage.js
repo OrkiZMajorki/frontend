@@ -8,7 +8,6 @@ import ConcertJPG from '../../../media/concert.jpg';
 const Canvas = styled.div`
   width: 100%;
   max-width: 1080px;
-  padding: 0 16px;
   margin-left: auto;
   margin-right: auto;
   display: flex;
@@ -40,18 +39,11 @@ const Feature = styled.div`
   width: 50%;
   padding: 64px 48px 40px;
 
-  @media screen and (max-width: 1024px) {
-    padding-right: 40px;
-    padding-left: 40px;
+  &:first-child {
+    padding-left: 16px;
   }
-
-  @media screen and (max-width: 768px) {
-    padding: 96px 0 0 0;
-    width: 100%;
-  }
-
-  @media screen and (max-width: 480px) {
-    padding-top: 72px;
+  &:last-child {
+    padding-right: 16px;
   }
 `;
 
@@ -111,7 +103,7 @@ const LandingPage = () => {
           </FeatureCategory>
           <FeatureTitle>Find musicians tailored to your venue</FeatureTitle>
           <FeatureText>From tiny bars to epic festivals, the right musicians make every place better.</FeatureText>
-          <Button size="big" background="highlight" content="Sign up as a venue" href="/register/venue" />
+          <Button size="big" background="highlight" content="Sign up as venue" href="/register/venue" />
         </Feature>
         <Feature>
           <FeatureCategory>
@@ -122,7 +114,7 @@ const LandingPage = () => {
           </FeatureCategory>
           <FeatureTitle>Play music you love at local bars</FeatureTitle>
           <FeatureText>Gather a team of awesome musicians, record a demo and gig on!</FeatureText>
-          <Button size="big" background="highlight" content="Sign up as a band" href="/register/band" />
+          <Button size="big" background="highlight" content="Sign up as band" href="/register/band" />
         </Feature>
       </FeaturesWrap>
       <Image />
