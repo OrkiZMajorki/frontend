@@ -162,7 +162,7 @@ const Timestamps = styled.div`
 
 
 const Matching = ({ user = {} }) => {
-  const [formOpen, setFormOpen] = useState(false);
+  const [formOpen, setFormOpen] = useState(true);
   const [city, setCity] = useState('CRACOV');
   const [genre, setGenre] = useState('ROCK');
   const [bands, setBands] = useState([]);
@@ -276,7 +276,7 @@ useEffect(() => {
                     { id: 3, value: 'pop', label: 'pop' },
                     { id: 4, value: 'country', label: 'country' },
                     { id: 5, value: 'jazz', label: 'jazz' },
-                    { id: 6, value: 'classical', label: 'classical' },
+                    { id: 6, value: 'CLASSIC', label: 'classical' },
                     { id: 7, value: 'folk', label: 'folk' },
                     { id: 8, value: 'metal', label: 'metal' },
                   ]}
@@ -292,12 +292,12 @@ useEffect(() => {
                   value={genre}
                   onChange={(value) => setGenre(value)}
                   options={[
-                    { id: 1, value: 'rock', label: 'rock' },
-                    { id: 2, value: 'hip-hop', label: 'hip-hop' },
+                    { id: 1, value: 'ROCK', label: 'rock' },
+                    { id: 2, value: 'RAP', label: 'hip-hop' },
                     { id: 3, value: 'pop', label: 'pop' },
                     { id: 4, value: 'country', label: 'country' },
-                    { id: 5, value: 'jazz', label: 'jazz' },
-                    { id: 6, value: 'classical', label: 'classical' },
+                    { id: 5, value: 'JAZZ', label: 'jazz' },
+                    { id: 6, value: 'CLASSIC', label: 'classical' },
                     { id: 7, value: 'folk', label: 'folk' },
                     { id: 8, value: 'metal', label: 'metal' },
                   ]}
@@ -309,13 +309,13 @@ useEffect(() => {
                   onChange={(value) => setCity(value)}
                   options={[
                     { id: 1, value: 'Bydgoszcz', label: 'Bydgoszcz' },
-                    { id: 2, value: 'Gdansk', label: 'Gdańsk' },
-                    { id: 3, value: 'Krakow', label: 'Kraków' },
+                    { id: 2, value: 'GDANSK', label: 'Gdańsk' },
+                    { id: 3, value: 'CRACOV', label: 'Kraków' },
                     { id: 4, value: 'Lodz', label: 'Łódź' },
                     { id: 5, value: 'Poznan', label: 'Poznań' },
                     { id: 6, value: 'Szczecin', label: 'Szczecin' },
                     { id: 7, value: 'Warszawa', label: 'Warszawa' },
-                    { id: 8, value: 'Wroclaw', label: 'Wrocław' },
+                    { id: 8, value: 'WROCLAW', label: 'Wrocław' },
                   ]}
                 />
               </>
