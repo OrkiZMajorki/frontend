@@ -56,11 +56,10 @@ const Header = styled.div`
         content: '';
         position: absolute;
         width: 100%;
-        height: 120px;
+        height: 32px;
         top: 550px;
         left: 0;
         z-index: -1;
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 0);
         background-image: linear-gradient(
           to left,
           #7231b5,

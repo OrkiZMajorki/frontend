@@ -8,7 +8,7 @@ import { ReactComponent as PlaySVG } from '../../../media/play.svg';
 import { ReactComponent as PauseSVG } from '../../../media/pause.svg';
 import { ReactComponent as HeartEmptySVG } from '../../../media/heartEmpty.svg';
 import { ReactComponent as HeartFilledSVG } from '../../../media/heartFilled.svg';
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client';
 
 const Canvas = styled.div`
   max-width: 1080px;
@@ -65,7 +65,7 @@ const SlidesWrap = styled.div`
   height: 100%;
   position: absolute;
   left: 15%;
-  transform: ${({ index, count }) => `translateX(${-1 * index * (275.5 / count)}%)`};
+  transform: ${({ index, count }) => `translateX(${-1 * index * (207 / count)}%)`};
   transition: transform 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
 `;
 
@@ -132,7 +132,7 @@ const Player = styled.div`
 `;
 
 const Info = styled.div`
-  width: 200px;
+  width: 280px;
 `;
 
 const BandName = styled.div`
@@ -178,10 +178,23 @@ const PlayButton = styled.div`
 `;
 
 const Timestamps = styled.div`
-  width: 200px;
+  width: 280px;
   font-size: 16px;
   text-align: right;
   font-family: monospace;
+`;
+
+const StyledButton = styled(Button)`
+  margin-top: 24px;
+`;
+
+const NoResults = styled.div`
+  font-size: 18px;
+  color: ${(props) => props.theme.white};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 240px;
 `;
 
 const Matching = ({ user = {} }) => {
@@ -214,6 +227,14 @@ const Matching = ({ user = {} }) => {
   `;
 
   const { data } = useQuery(BAND_QUERY, { variables: { genres: [genre], cities: [city] } });
+
+  useEffect(() => {
+    if (data) {
+      console.log(data.findBandsByGenreAndCity);
+      setBands(data.findBandsByGenreAndCity);
+      setActiveBand(data.findBandsByGenreAndCity[0]);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (data) {
@@ -359,7 +380,7 @@ const Matching = ({ user = {} }) => {
           />
         </>
       )}
-      {!formOpen && bands.length && (
+      {!formOpen && !!bands.length && (
         <>
           <Slideshow>
             <SlidesWrap index={activeBandIndex} count={bands.length}>
@@ -395,6 +416,12 @@ const Matching = ({ user = {} }) => {
           </Player>
           <audio src={activeBand.songUrl} ref={audioRef} />
         </>
+      )}
+      {!formOpen && !bands.length && (
+        <NoResults>
+          Unfortunately your search yielded no results
+          <StyledButton content={'try something different'} onClick={() => setFormOpen(true)} />
+        </NoResults>
       )}
     </Canvas>
   );
