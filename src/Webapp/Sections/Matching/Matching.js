@@ -202,7 +202,6 @@ const Matching = ({ user = {} }) => {
   const [city, setCity] = useState('CRACOV');
   const [genre, setGenre] = useState('ROCK');
   const [bands, setBands] = useState([]);
-  console.log(bands);
   const role = user.role || 'VENUE';
 
   const [activeBand, setActiveBand] = useState((bands || [])[0]);
@@ -230,7 +229,6 @@ const Matching = ({ user = {} }) => {
 
   useEffect(() => {
     if (data) {
-      console.log(data.findBandsByGenreAndCity);
       setBands(data.findBandsByGenreAndCity);
       setActiveBand(data.findBandsByGenreAndCity[0]);
     }
@@ -238,7 +236,6 @@ const Matching = ({ user = {} }) => {
 
   useEffect(() => {
     if (data) {
-      console.log(data.findBandsByGenreAndCity);
       setBands(data.findBandsByGenreAndCity);
       setActiveBand(data.findBandsByGenreAndCity[0]);
     }
