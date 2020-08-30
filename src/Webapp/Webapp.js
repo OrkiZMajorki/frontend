@@ -143,6 +143,7 @@ const Webapp = ({ color = 'white', type = 'regular', history}) => {
       login(userLogin: { email: $email, password: $password }) {
         id
         username
+        email
         role
       }
     }
@@ -152,10 +153,9 @@ const Webapp = ({ color = 'white', type = 'regular', history}) => {
   const [createVenue] = useMutation(CREATE_VENUE_MUTATION);
   const {load, error, data} = useQuery(LOGIN_QUERY, {variables: { email: (user || {}).email, password: (user || {}).password } });
   useEffect(() => {
-      console.log(data);
-
-      if (mode === 'login') {
-          console.log('Another things necessary for loggin (setting id from data?)');
+      if (mode === 'login' && data) {
+          const userdata = data.login;
+          setUser({name: userdata.username, email: userdata.email, role: userdata.role, id: userdata.id});
           history.push('/matching');
       }
   }, [data]);
