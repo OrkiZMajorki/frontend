@@ -139,8 +139,8 @@ const Webapp = ({ color = 'white', type = 'regular', history}) => {
   `;
 
   const CREATE_BAND_MUTATION = gql`
-    mutation CreateBand($name: String!, $userId: ID!) {
-      createBand(band: { name: $name }, userId: $userId) {
+    mutation CreateBand($name: String!, $userId: ID!, $imageUrl: String) {
+      createBand(band: { name: $name, imageUrl: $imageUrl }, userId: $userId) {
         id
         name
       }
@@ -179,11 +179,11 @@ const Webapp = ({ color = 'white', type = 'regular', history}) => {
     return await createVenue({ variables: { name, userId }});
   }
 
-  async function createNewBand(name, userId) {
-    return await createBand({ variables: { name, userId }});
+  async function createNewBand(name, userId, imageUrl) {
+    return await createBand({ variables: { name, userId, imageUrl }});
   }
 
-  function authenticate(newUser, mode) {
+  function authenticate(newUser, mode, imageUrl) {
     setUser(newUser);
     setMode(mode);
 
@@ -198,7 +198,7 @@ const Webapp = ({ color = 'white', type = 'regular', history}) => {
                     if (userRole === 'VENUE') {
                         createNewVenue(username, userId);
                     } else if (userRole === 'BAND') {
-                        createNewBand(username, userId);
+                        createNewBand(username, userId, imageUrl);
                     }
 
                     setUser({...newUser, id: userId});

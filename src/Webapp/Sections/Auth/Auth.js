@@ -78,10 +78,10 @@ const Auth = ({ mode, authenticate, user, location = '' }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [url, setUrl] = useState('');
+  const [imageUrl, setUrl] = useState('');
 
   function onAuthenticate() {
-    authenticate({ role, name, email, password }, mode);
+    authenticate({ role, name, email, password }, mode, imageUrl);
   }
 
   return (
@@ -103,8 +103,7 @@ const Auth = ({ mode, authenticate, user, location = '' }) => {
           </>
         )}
         <StyledInput type="email" title="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <StyledInput type="password" title="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <ImageComponent onChange={(value) => {setUrl(value)} } />
+        <StyledInput type="password" title="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>       { role === 'BAND' && <ImageComponent onChange={(value) => {setUrl(value)} } /> }
         <StyledButton size="big" content="Sign in" onClick={onAuthenticate} />
         <BottomText>
           {mode === 'login' ? (
