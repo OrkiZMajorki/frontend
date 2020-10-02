@@ -9,6 +9,7 @@ import { ReactComponent as PauseSVG } from '../../../media/pause.svg';
 import { ReactComponent as HeartEmptySVG } from '../../../media/heartEmpty.svg';
 import { ReactComponent as HeartFilledSVG } from '../../../media/heartFilled.svg';
 import { gql, useQuery } from '@apollo/client';
+import axios from 'axios';
 
 const Canvas = styled.div`
   max-width: 1080px;
@@ -199,7 +200,8 @@ const NoResults = styled.div`
 
 const Matching = ({ user = {} }) => {
   const [formOpen, setFormOpen] = useState(true);
-  const [city, setCity] = useState('CRACOV');
+  const [selectedCity, setSelectedCity] = useState();
+  const [cities, setCities] = useState([]);
   const [genre, setGenre] = useState('ROCK');
   const [bands, setBands] = useState([]);
   const role = user.role || 'VENUE';
@@ -211,7 +213,7 @@ const Matching = ({ user = {} }) => {
 
   const audioRef = useRef();
   const BAND_QUERY = gql`
-    query Band($genres: [String]!, $cities: [String]!) {
+    query Band($genres: [String]!, $cities: [ID]!) {
       findBandsByGenreAndCity(genres: $genres, cities: $cities) {
         id
         name
@@ -225,7 +227,19 @@ const Matching = ({ user = {} }) => {
     }
   `;
 
-  const { data } = useQuery(BAND_QUERY, { variables: { genres: [genre], cities: [city] } });
+  const { data } = useQuery(BAND_QUERY, { variables: { genres: [genre], cities: [selectedCity] } });
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      const result = await axios(
+        `https://hacknarok-backend.herokuapp.com/city`,
+      );
+
+      setCities(result.data);
+    };
+
+    fetchCities();
+  }, []);
 
   useEffect(() => {
     if (data) {
@@ -301,18 +315,15 @@ const Matching = ({ user = {} }) => {
                 We are looking for musicians in
                 <Dropdown
                   skin="natural"
-                  value={city}
-                  onChange={(value) => setCity(value)}
-                  options={[
-                    { id: 1, value: 'Bydgoszcz', label: 'Bydgoszcz' },
-                    { id: 2, value: 'GDANSK', label: 'Gdańsk' },
-                    { id: 3, value: 'CRACOV', label: 'Kraków' },
-                    { id: 4, value: 'Lodz', label: 'Łódź' },
-                    { id: 5, value: 'Poznan', label: 'Poznań' },
-                    { id: 6, value: 'Szczecin', label: 'Szczecin' },
-                    { id: 7, value: 'Warszawa', label: 'Warszawa' },
-                    { id: 8, value: 'WROCLAW', label: 'Wrocław' },
-                  ]}
+                  value={selectedCity}
+                  onChange={(value) => setSelectedCity(value)}
+                  options={
+                    cities.map(city => ({
+                      id: city.id,
+                      value: city.id,
+                      label: city.name
+                    }))
+                  }
                 />
                 that play
                 <Dropdown
@@ -354,18 +365,15 @@ const Matching = ({ user = {} }) => {
                 music and we're looking for a gig in
                 <Dropdown
                   skin="natural"
-                  value={city}
-                  onChange={(value) => setCity(value)}
-                  options={[
-                    { id: 1, value: 'Bydgoszcz', label: 'Bydgoszcz' },
-                    { id: 2, value: 'GDANSK', label: 'Gdańsk' },
-                    { id: 3, value: 'CRACOV', label: 'Kraków' },
-                    { id: 4, value: 'Lodz', label: 'Łódź' },
-                    { id: 5, value: 'Poznan', label: 'Poznań' },
-                    { id: 6, value: 'Szczecin', label: 'Szczecin' },
-                    { id: 7, value: 'Warszawa', label: 'Warszawa' },
-                    { id: 8, value: 'WROCLAW', label: 'Wrocław' },
-                  ]}
+                  value={selectedCity}
+                  onChange={(value) => setSelectedCity(value)}
+                  options={
+                    cities.map(city => ({
+                      id: city.id,
+                      value: city.id,
+                      label: city.name
+                    }))
+                  }
                 />
               </>
             )}
